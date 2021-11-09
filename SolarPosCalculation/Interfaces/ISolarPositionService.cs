@@ -8,6 +8,9 @@ namespace SolarPosCalculation.Interfaces
 {
     public interface ISolarPositionService
     {
-        double Whatever(double latitude, double longitude, int timezone);
+        DateTime SunRise { get; }
+        DateTime SunSet { get;  }
+        string MoonPHase { get;  }
+        DateTime CalculateNoon(double longitude);
     }
 }
