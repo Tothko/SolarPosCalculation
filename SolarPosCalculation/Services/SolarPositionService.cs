@@ -1,10 +1,12 @@
 ﻿using CoordinateSharp;
+using GeoTimeZone;
 using SolarPosCalculation.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TimeZoneConverter;
 
 namespace SolarPosCalculation.Services
 {
@@ -154,7 +156,9 @@ namespace SolarPosCalculation.Services
         /// <param name="longitude"></param>
         public void CalculateInformation(double latitude, double longitude, bool isDaylightSavingTime)
         {
-            
+
+            string tzIana = TimeZoneLookup.GetTimeZone(latitude, longitude).Result;
+            TimeZoneInfo tzInfo = TZConvert.GetTimeZoneInfo(tzIana);
             
             Celestial cel = Celestial.CalculateCelestialTimes(latitude, longitude, DateTime.Now);
             _sunRise = cel.SunRise.Value;
@@ -164,6 +168,8 @@ namespace SolarPosCalculation.Services
                 _sunRise =_sunRise.AddHours(1);
                 _sunSet = _sunSet.AddHours(1);
             }
+            _sunRise = TimeZoneInfo.ConvertTime(_sunRise, tzInfo);
+            _sunSet = TimeZoneInfo.ConvertTime(_sunSet, tzInfo);
             _moonPhase = cel.MoonIllum.PhaseName;
 
         }
